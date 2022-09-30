@@ -11,7 +11,43 @@ exports.create = async (req, res) => {
     res.send({ status: 'faild', message: 'User already exist.' });
     return;
   }
-  const code = req.body.nickname + req.body.address.slice(5, 20);
+
+  function randomString() {
+    var characters = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz1234567890";
+    var lenString = 4;
+    var randomstring = "";
+    
+    for (var i = 0; i < lenString; i ++) {
+      var rnum = Math.floor(Math.random() * characters.length);
+      randomstring += characters.substring(rnum, rnum+1);
+    }
+
+    if (findOneByCode(randomstring)) {
+      randomString();
+    } 
+
+    return randomstring;
+  }
+
+  const findOneByCode = (code) => {
+    let boolean = false;
+
+    User.findOne({code: code})
+    .then(data => {
+      if (!data)
+        boolean = true;
+      else  boolean =false;
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+    console.log(boolean);
+    return boolean;
+  }
+
+  const code = randomString();
+
   const newuser = new User({
     nickname: req.body.nickname,
     address: req.body.address,
